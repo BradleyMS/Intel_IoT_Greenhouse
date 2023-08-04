@@ -20,7 +20,7 @@ Intialize global variables
 ***************************************************************************
 */
 
-String version = "Rev2.1.2"; // Update version info to make sure the correct sketch is loaded
+String version = "Rev2.1.4"; // Update version info to make sure the correct sketch is loaded
 unsigned long currentTime = 0;
 
 /*
@@ -111,10 +111,10 @@ volatile byte relayState[4] = {LOW, LOW, LOW, LOW}; // Initialize relay state va
 //D8 -> RELAY3
 //D10 -> RELAY4
 
-unsigned long previousTimerelay1 = 1000; // Initial time for Relay 1
-unsigned long previousTimerelay2 = 1000; // Initial time for Relay 2
-unsigned long previousTimerelay3 = 1000; // Initial time for Relay 3
-unsigned long previousTimerelay4 = 1000; // Initial time for Relay 4
+unsigned long previousTimeRelay1 = 1000; // Initial time for Relay 1
+unsigned long previousTimeRelay2 = 1000; // Initial time for Relay 2
+unsigned long previousTimeRelay3 = 1000; // Initial time for Relay 3
+unsigned long previousTimeRelay4 = 1000; // Initial time for Relay 4
 
 /*
 ***************************************************************************
@@ -281,54 +281,71 @@ void manualControls(unsigned long currentTime) {
     if(controlString.indexOf("?LEFTWINDOW45") > -1) { open_left_window(currentTime); } //checks for LEFTWINDOW45 and opens left window
     if(controlString.indexOf("?RIGHTWINDOW0") > -1) { close_right_window(currentTime); } //checks for RIGHTWINDOW0 and closes right window
     if(controlString.indexOf("?RIGHTWINDOW45") > -1) { open_right_window(currentTime); } //checks for RIGHTWINDOW45 and opens right window
+
+    //checks for RELAY1ON and turns relay 1 on
     if(controlString.indexOf("?RELAY1ON") > -1) {
-      if ( currentTime - previousTimerelay1 > 2000 ) {
+      if ( currentTime - previousTimeRelay1 > 2000 ) {
         digitalWrite(relayPin[0],HIGH);
         relayState[0] = HIGH;
+        previousTimeRelay1 = currentTime;
       }
-    } //checks for RELAY1ON and turns relay 1 on
+    }
+    //checks for RELAY1OFF and turns relay 1 off
     if(controlString.indexOf("?RELAY1OFF") > -1) {
-      if ( currentTime - previousTimerelay1 > 2000 ) {
+      if ( currentTime - previousTimeRelay1 > 2000 ) {
         digitalWrite(relayPin[0],LOW);
         relayState[0] = LOW;
+        previousTimeRelay1 = currentTime;
       }
-    } //checks for RELAY1OFF and turns relay 1 off
+    }
+    //checks for RELAY2ON and turns relay 2 on
     if(controlString.indexOf("?RELAY2ON") > -1) {
-      if ( currentTime - previousTimerelay2 > 2000 ) {
+      if ( currentTime - previousTimeRelay2 > 2000 ) {
         digitalWrite(relayPin[1],HIGH);
         relayState[1] = HIGH;
+        previousTimeRelay2 = currentTime;
       }
-    } //checks for RELAY2ON and turns relay 2 on
+    }
+    //checks for RELAY2OFF and turns relay 2 off
     if(controlString.indexOf("?RELAY2OFF") > -1) {
-      if ( currentTime - previousTimerelay2 > 2000 ) {
+      if ( currentTime - previousTimeRelay2 > 2000 ) {
         digitalWrite(relayPin[1],LOW);
         relayState[1] = LOW;
+        previousTimeRelay2 = currentTime;
       }
-    } //checks for RELAY2OFF and turns relay 2 off
+    }
+    //checks for RELAY3ON and turns relay 3 on
     if(controlString.indexOf("?RELAY3ON") > -1) {
-      if ( currentTime - previousTimerelay3 > 2000 ) {
+      if ( currentTime - previousTimeRelay3 > 2000 ) {
         digitalWrite(relayPin[2],HIGH);
         relayState[2] = HIGH;
+        previousTimeRelay3 = currentTime;
       }
-    } //checks for RELAY3ON and turns relay 3 on
+    }
+    //checks for RELAY3OFF and turns relay 3 off
     if(controlString.indexOf("?RELAY3OFF") > -1) {
-      if ( currentTime - previousTimerelay3 > 2000 ) {
+      if ( currentTime - previousTimeRelay3 > 2000 ) {
         digitalWrite(relayPin[2],LOW);
         relayState[2] = LOW;
+        previousTimeRelay3 = currentTime;
       }
-    } //checks for RELAY3OFF and turns relay 3 off
+    }
+    //checks for RELAY4ON and turns relay 4 on
     if(controlString.indexOf("?RELAY4ON") > -1) {
-      if ( currentTime - previousTimerelay4 > 2000 ) {
+      if ( currentTime - previousTimeRelay4 > 2000 ) {
         digitalWrite(relayPin[3],HIGH);
         relayState[3] = HIGH;
+        previousTimeRelay4 = currentTime;
       }
-    } //checks for RELAY4ON and turns relay 4 on
+    }
+    //checks for RELAY4OFF and turns relay 4 off
     if(controlString.indexOf("?RELAY4OFF") > -1) {
-      if ( currentTime - previousTimerelay4 > 2000 ) {
+      if ( currentTime - previousTimeRelay4 > 2000 ) {
         digitalWrite(relayPin[3],LOW);
         relayState[3] = LOW;
+        previousTimeRelay4 = currentTime;
       }
-    } //checks for RELAY4OFF and turns relay 4 off
+    }
     if(controlString.indexOf("?WHITELED") > -1) { colorWipe(strip.Color( 127, 127, 127), 20); Serial.println("White LED turned on."); } // White
     if(controlString.indexOf("?REDLED") > -1) { colorWipe(strip.Color( 127,   0,   0), 20); Serial.println("Red LED turned on."); } // Red
     if(controlString.indexOf("?BLUELED") > -1) { colorWipe(strip.Color(   0, 127,   0), 20); Serial.println("Blue LED turned on."); } // Blue
@@ -346,16 +363,18 @@ void tempCheckAutomation(unsigned long currentTime) {
   int tempReading = analogRead(2);
   float tempValue = -0.00277358191992865 * pow(tempReading ,2) + 2.12540388128839 * tempReading + -183.108886107634;
   if ((tempValue > 85.00)  && ((relayState[3]) == LOW)) {
-    if ( currentTime - previousTimerelay4 > 2000 ) {
+    if ( currentTime - previousTimeRelay4 > 2000 ) {
       digitalWrite(relayPin[3],HIGH);
       relayState[3] = HIGH;
+      previousTimeRelay4 = currentTime;
     }
   }
   else;
   if ((tempValue < 80.00)  && ((relayState[3]) == HIGH)) {
-    if ( currentTime - previousTimerelay4 > 2000 ) {
+    if ( currentTime - previousTimeRelay4 > 2000 ) {
       digitalWrite(relayPin[3],LOW);
       relayState[3] = LOW;
+      previousTimeRelay4 = currentTime;
     }
   }
   if ((tempValue > 90.00) && (position_left_window < 15)) {
@@ -391,6 +410,7 @@ void open_door(unsigned long currentTime) {
   if ( currentTime - previousTimeDoor > 2000 ) {
     position_door = 90;
     servo_door.write(45);
+    previousTimeDoor = currentTime;
   }
 }
 
@@ -404,6 +424,7 @@ void close_door(unsigned long currentTime) {
   if ( currentTime - previousTimeDoor > 2000 ) {
     position_door = 0;
     servo_door.write(135);
+    previousTimeDoor = currentTime;
   }
 }
 
@@ -417,6 +438,7 @@ void open_left_window(unsigned long currentTime) {
   if ( currentTime - previousTimeLeftWindow > 2000 ) {
     position_left_window = 45;
     servo_left_window.write(130);
+    previousTimeLeftWindow = currentTime;
   }
 }
 
@@ -430,6 +452,7 @@ void close_left_window(unsigned long currentTime) {
   if ( currentTime - previousTimeLeftWindow > 2000 ) {
     position_left_window = 0;
     servo_left_window.write(85);
+    previousTimeLeftWindow = currentTime;
   }
 }
 
@@ -443,6 +466,7 @@ void open_right_window(unsigned long currentTime) {
   if ( currentTime - previousTimeRightWindow > 2000 ) {
     position_right_window = 45;
     servo_right_window.write(65);
+    previousTimeRightWindow = currentTime;
   }
 }
 
@@ -456,6 +480,7 @@ void close_right_window(unsigned long currentTime) {
   if ( currentTime - previousTimeRightWindow > 2000 ) {
     position_right_window = 0;
     servo_right_window.write(110);
+    previousTimeRightWindow = currentTime;
   }
 }
 
