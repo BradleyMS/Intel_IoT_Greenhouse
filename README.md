@@ -9,4 +9,4 @@ In order to program this board, I had to install the "Intel i586 Boards" from th
 
 In order to control the LEDs I had to add the LPD8806 library and modify it to allow for a missing "F_CPU" value to work with this board.
 
-Version 2.2 and above includes controls for a 10w LED grow light on relay 2.  THe light will automatically turn on, and then automatically turn off at 90F
+Version 2.2 and above includes controls for a 10w LED grow light on relay 2.  The light will automatically turn on, and then automatically turn off at 90F
